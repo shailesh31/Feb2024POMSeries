@@ -22,6 +22,7 @@ import com.qa.opencart.constants.AppConstants;
 import com.qa.opencart.errors.AppError;
 import com.qa.opencart.exceptions.BrowserException;
 import com.qa.opencart.exceptions.FrameworkException;
+import com.qa.opencart.logger.Log;
 
 public class DriverFactory {
 
@@ -40,7 +41,8 @@ public class DriverFactory {
 	 */
 	public WebDriver initDriver(Properties prop) {
 		String browserName = prop.getProperty("browser");
-		System.out.println("browser name is : " + browserName);
+		//System.out.println("browser name is : " + browserName);
+		Log.info("browser name is : " + browserName);
 
 		highlight = prop.getProperty("highlight");
 
@@ -53,6 +55,7 @@ public class DriverFactory {
 				initRemoteDriver("chrome");
 			} else {
 				// run it in local
+				Log.info("Running tests on Local");
 				tlDriver.set(new ChromeDriver(optionsManager.getChromeOptions()));
 			}
 			break;
@@ -77,12 +80,14 @@ public class DriverFactory {
 			break;
 
 		default:
-			System.out.println("plz pass the right browser name..." + browserName);
+			//System.out.println("plz pass the right browser name..." + browserName);
+			Log.error("plz pass the right browser name..." + browserName);
 			throw new BrowserException(AppError.BROWSER_NOT_FOUND);
 		}
 
 		getDriver().manage().deleteAllCookies();
 		getDriver().manage().window().maximize();
+		Log.info("app url : " + prop.getProperty("url"));
 		getDriver().get(prop.getProperty("url"));// loginPage
 
 		return getDriver();
@@ -143,13 +148,15 @@ public class DriverFactory {
 		// mvn clean install
 
 		String envName = System.getProperty("env");
-		System.out.println("running test suite on env--->" + envName);
+		//System.out.println("running test suite on env--->" + envName);
+		Log.info("running test suite on env--->" + envName);
 
 		if (envName == null) {
 			System.out.println("env name is not given, hence running it on QA environment....");
 			try {
 				ip = new FileInputStream(AppConstants.CONFIG_QA_FILE_PATH);
 			} catch (FileNotFoundException e) {
+				Log.error("file not found", e);
 				e.printStackTrace();
 			}
 		} else {
@@ -176,6 +183,7 @@ public class DriverFactory {
 					throw new FrameworkException("===WRONGENVPASSED===");
 				}
 			} catch (FileNotFoundException e) {
+				Log.error("file not found", e);
 				e.printStackTrace();
 			}
 		}

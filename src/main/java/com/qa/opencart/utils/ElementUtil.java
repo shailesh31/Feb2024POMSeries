@@ -589,5 +589,11 @@ public class ElementUtil {
 
 	// click
 	// isPageLoaded -- new page
+	
+	public void naveenClick() {
+		System.out.println("click");
+	}
+	
+	
 
 }
